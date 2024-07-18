@@ -5,8 +5,14 @@ const services = require("./service");
 const UserAuth = require("../api/middlewares/auth");
 
 const routes = [
+  // EK4
   { path: "/gibGetEpkbb", method: "get" },
   { path: "/gibUpdateEpkbb", method: "post" },
+
+  // EK5
+  { path: "/gibGetEphpycni", method: "get" },
+  { path: "/gibUpdateEphpycni", method: "post" },
+
   { path: "/gibGetMenu", method: 'post'},
   { path: "/gibGetError", method: 'get'},
   { path: "/gibInsertError", method: 'post'},

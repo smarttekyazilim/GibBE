@@ -32,6 +32,62 @@ class GibService {
     }
   }
 
+  async gibUpdateEphpycni(req, res, next) {
+    try {
+
+      const response = await sp.gibUpdateEphpycni(req.body);
+      if (response && response.RESPONSECODE === "000") {
+        return {
+          STATUS: "success",
+          RESPONSECODE: response.RESPONSECODE,
+          RESPONSECODEDESC: response.RESPONSECODEDESC,
+          DATA: response.DATA,
+        };
+      } else {
+        return {
+          STATUS: "error",
+          RESPONSECODE: response.RESPONSECODE,
+          RESPONSECODEDESC: response.RESPONSECODEDESC,
+        };
+      }
+    } catch (error) {
+      return {
+        STATUS: "error",
+        RESPONSECODE: "999",
+        RESPONSECODEDESC: "Beklenmeyen bir hata oluştu.",
+        RESPONSECODEDESC: error.message + error.stack,
+      };
+    }
+  }
+
+  async gibGetEphpycni(req, res, next) {
+    try {
+
+      const response = await sp.gibGetEphpycni();
+      if (response && response.RESPONSECODE === "000") {
+        return {
+          STATUS: "success",
+          RESPONSECODE: response.RESPONSECODE,
+          RESPONSECODEDESC: response.RESPONSECODEDESC,
+          DATA: response.DATA,
+        };
+      } else {
+        return {
+          STATUS: "error",
+          RESPONSECODE: response.RESPONSECODE,
+          RESPONSECODEDESC: response.RESPONSECODEDESC,
+        };
+      }
+    } catch (error) {
+      return {
+        STATUS: "error",
+        RESPONSECODE: "999",
+        RESPONSECODEDESC: "Beklenmeyen bir hata oluştu.",
+        RESPONSECODEDESC: error.message + error.stack,
+      };
+    }
+  }
+
   async gibUpdateEpkbb(req, res, next) {
     try {
 
