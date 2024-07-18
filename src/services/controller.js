@@ -13,6 +13,10 @@ const routes = [
   { path: "/gibGetEphpycni", method: "get" },
   { path: "/gibUpdateEphpycni", method: "post" },
 
+  // EK6
+  { path: "/gibGetYt", method: "get" },
+  { path: "/gibUpdateYt", method: "post" },
+
   { path: "/gibGetMenu", method: 'post'},
   { path: "/gibGetError", method: 'get'},
   { path: "/gibInsertError", method: 'post'},

@@ -116,6 +116,62 @@ class GibService {
     }
   }
 
+  async gibGetYt(req, res, next) {
+    try {
+
+      const response = await sp.gibGetYt();
+      if (response && response.RESPONSECODE === "000") {
+        return {
+          STATUS: "success",
+          RESPONSECODE: response.RESPONSECODE,
+          RESPONSECODEDESC: response.RESPONSECODEDESC,
+          DATA: response.DATA,
+        };
+      } else {
+        return {
+          STATUS: "error",
+          RESPONSECODE: response.RESPONSECODE,
+          RESPONSECODEDESC: response.RESPONSECODEDESC,
+        };
+      }
+    } catch (error) {
+      return {
+        STATUS: "error",
+        RESPONSECODE: "999",
+        RESPONSECODEDESC: "Beklenmeyen bir hata oluştu.",
+        RESPONSECODEDESC: error.message + error.stack,
+      };
+    }
+  }
+
+  async gibUpdateYt(req, res, next) {
+    try {
+
+      const response = await sp.gibUpdateYt(req.body);
+      if (response && response.RESPONSECODE === "000") {
+        return {
+          STATUS: "success",
+          RESPONSECODE: response.RESPONSECODE,
+          RESPONSECODEDESC: response.RESPONSECODEDESC,
+          DATA: response.DATA,
+        };
+      } else {
+        return {
+          STATUS: "error",
+          RESPONSECODE: response.RESPONSECODE,
+          RESPONSECODEDESC: response.RESPONSECODEDESC,
+        };
+      }
+    } catch (error) {
+      return {
+        STATUS: "error",
+        RESPONSECODE: "999",
+        RESPONSECODEDESC: "Beklenmeyen bir hata oluştu.",
+        RESPONSECODEDESC: error.message + error.stack,
+      };
+    }
+  }
+
   async gibGetMenu(req, res, next) {
     try {
 

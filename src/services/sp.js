@@ -379,6 +379,120 @@ async function gibUpdateEphpycni(body) {
   return res;
 }
 
+async function gibGetYt() {
+  const connection = await getConnection();
+
+  const result = await connection.execute(
+    `BEGIN GIB_YT_GET_ALL(:O_RESPONSECODE, :O_RESPONSECODEDESC, :O_REC_LIST, :O_KURUM_CODE); END;`,
+    {
+      O_RESPONSECODE: { dir: oracledb.BIND_OUT, type: oracledb.STRING },
+      O_RESPONSECODEDESC: { dir: oracledb.BIND_OUT, type: oracledb.STRING },
+      O_REC_LIST: { dir: oracledb.BIND_OUT, type: oracledb.CURSOR },
+      O_KURUM_CODE: { dir: oracledb.BIND_OUT, type: oracledb.STRING }
+    }
+  );
+
+  const resultSet = result.outBinds.O_REC_LIST;
+  const TRANSACTION_DATA = await resultSet.getRows();
+  let metaData = resultSet.metaData;
+
+  const columnNames = metaData.map(column => column.name);
+
+  const formattedData = TRANSACTION_DATA.map(row => {
+    const formattedRow = {};
+    columnNames.forEach((columnName, index) => {
+      formattedRow[columnName] = row[index];
+    });
+    return formattedRow;
+  });
+
+  await resultSet.close();
+  await connection.close();
+
+  let res = {};
+  res.RESPONSECODE = result.outBinds.O_RESPONSECODE;
+  res.RESPONSECODEDESC = result.outBinds.O_RESPONSECODEDESC;
+  res.KURUM_KOD = result.outBinds.O_KURUM_CODE;
+  res.DATA = formattedData;
+
+  return res;
+}
+
+async function gibUpdateYt(body) {
+
+  const { L_REF, RECORD_TYPE, ISLEM_TURU, GON_MUSTERI_MI, GON_GK_AD, GON_GK_SOYAD, GON_GK_KIMLIK_TIPI, GON_GK_KIMLIK_NO, GON_ILCE_ADI, GON_IL_KOD, GON_IL_ADI, GON_TEL, GON_EPOSTA, GON_OK_EPARA, GON_BANKA_AD, GON_BANKA_KOD, GON_IBAN, GON_HES_NO, AL_MUSTERI_MI, AL_OK_VKN, AL_OK_UNVAN, AL_GK_AD, AL_GK_SOYAD, AL_GK_KIMLIK_NO, AL_ILCE_ADI, AL_IL_KOD, AL_IL_ADI, AL_TEL, AL_EPOSTA, AL_IBAN, AL_HES_NO, AL_KREDI_KART_NO, AL_DEBIT_KART_NO, IS_TAR, IS_SAAT, ODENME_TAR, ISLEM_IP, ISLEM_TUTAR, ASIL_TUTAR, PARA_BIRIM, BRUT_KOM_TUT, KUR_ACIKLAMA, MUS_ACIKLAMA, DELETED_FLAG, GNDRM_TAR, IS_SEND } = body
+
+  const connection = await getConnection();
+
+  const result = await connection.execute(
+    `BEGIN GIB_YT_UPDATE(:P_L_REF, :P_RECORD_TYPE, :P_ISLEM_TURU, :P_GON_MUSTERI_MI, :P_GON_GK_AD, :P_GON_GK_SOYAD, :P_GON_GK_KIMLIK_TIPI, :P_GON_GK_KIMLIK_NO, :P_GON_ILCE_ADI, :P_GON_IL_KOD, :P_GON_IL_ADI, :P_GON_TEL, :P_GON_EPOSTA, :P_GON_OK_EPARA, :P_GON_BANKA_AD, :P_GON_BANKA_KOD, :P_GON_IBAN, :P_GON_HES_NO, :P_AL_MUSTERI_MI, :P_AL_OK_VKN, :P_AL_OK_UNVAN, :P_AL_GK_AD, :P_AL_GK_SOYAD, :P_AL_GK_KIMLIK_NO, :P_AL_ILCE_ADI, :P_AL_IL_KOD, :P_AL_IL_ADI, :P_AL_TEL, :P_AL_EPOSTA, :P_AL_IBAN, :P_AL_HES_NO, :P_AL_KREDI_KART_NO, :P_AL_DEBIT_KART_NO, :P_IS_TAR, :P_IS_SAAT, :P_ODENME_TAR, :P_ISLEM_IP, :P_ISLEM_TUTAR, :P_ASIL_TUTAR, :P_PARA_BIRIM, :P_BRUT_KOM_TUT, :P_KUR_ACIKLAMA, :P_MUS_ACIKLAMA, :P_DELETED_FLAG, :P_GNDRM_TAR, :P_IS_SEND, :O_RESPONSECODE, :O_RESPONSECODEDESC, :O_ERROR_DESCRIPTION ); END;`,
+    {
+      P_L_REF: L_REF,
+      P_RECORD_TYPE: RECORD_TYPE,
+      P_ISLEM_TURU: ISLEM_TURU,
+      P_GON_MUSTERI_MI: GON_MUSTERI_MI, 
+      P_GON_GK_AD: GON_GK_AD, 
+      P_GON_GK_SOYAD: GON_GK_SOYAD, 
+      P_GON_GK_KIMLIK_TIPI: GON_GK_KIMLIK_TIPI, 
+      P_GON_GK_KIMLIK_NO: GON_GK_KIMLIK_NO, 
+      P_GON_ILCE_ADI: GON_ILCE_ADI, 
+      P_GON_IL_KOD: GON_IL_KOD,  
+      P_GON_IL_ADI: GON_IL_ADI, 
+      P_GON_TEL: GON_TEL, 
+      P_GON_EPOSTA: GON_EPOSTA, 
+      P_GON_OK_EPARA: GON_OK_EPARA, 
+      P_GON_BANKA_AD: GON_BANKA_AD, 
+      P_GON_BANKA_KOD: GON_BANKA_KOD, 
+      P_GON_IBAN: GON_IBAN, 
+      P_GON_HES_NO: GON_HES_NO,
+      P_AL_MUSTERI_MI: AL_MUSTERI_MI, 
+      P_AL_OK_VKN: AL_OK_VKN, 
+      P_AL_OK_UNVAN: AL_OK_UNVAN, 
+      P_AL_GK_AD: AL_GK_AD, 
+      P_AL_GK_SOYAD: AL_GK_SOYAD, 
+      P_AL_GK_KIMLIK_NO: AL_GK_KIMLIK_NO, 
+      P_AL_ILCE_ADI: AL_ILCE_ADI, 
+      P_AL_IL_KOD: AL_IL_KOD,
+      P_AL_IL_ADI: AL_IL_ADI,
+      P_AL_TEL: AL_TEL,
+      P_AL_EPOSTA: AL_EPOSTA,
+      P_AL_IBAN: AL_IBAN,
+      P_AL_HES_NO: AL_HES_NO,
+      P_AL_KREDI_KART_NO: AL_KREDI_KART_NO,
+      P_AL_DEBIT_KART_NO: AL_DEBIT_KART_NO,
+      P_IS_TAR: IS_TAR,
+      P_IS_SAAT: IS_SAAT,
+      P_ODENME_TAR: ODENME_TAR,
+      P_ISLEM_IP: ISLEM_IP,
+      P_ISLEM_TUTAR: ISLEM_TUTAR,
+      P_ASIL_TUTAR: ASIL_TUTAR,
+      P_ISLEM_IP: ISLEM_IP,
+      P_ISLEM_IP: ISLEM_IP,
+      P_PARA_BIRIM: PARA_BIRIM, 
+      P_BRUT_KOM_TUT: BRUT_KOM_TUT, 
+      P_KUR_ACIKLAMA: KUR_ACIKLAMA,
+      P_MUS_ACIKLAMA: MUS_ACIKLAMA,
+      P_KUR_ACIKLAMA: KUR_ACIKLAMA,
+      P_DELETED_FLAG: DELETED_FLAG, 
+      P_GNDRM_TAR: GNDRM_TAR,
+      P_IS_SEND: IS_SEND,
+      
+      O_RESPONSECODE: { dir: oracledb.BIND_OUT, type: oracledb.STRING },
+      O_RESPONSECODEDESC: { dir: oracledb.BIND_OUT, type: oracledb.STRING },
+      O_ERROR_DESCRIPTION: { dir: oracledb.BIND_OUT, type: oracledb.STRING }
+    }
+  );
+
+  await connection.close();
+
+  let res = {};
+  res.RESPONSECODE = result.outBinds.O_RESPONSECODE;
+  res.RESPONSECODEDESC = result.outBinds.O_RESPONSECODEDESC;
+  res.ERROR_DESCRIPTION = result.outBinds.O_ERROR_DESCRIPTION;
+
+  return res;
+}
+
 async function gibGetMenu(LANGUAGE) {
   const connection = await getConnection();
 
@@ -492,6 +606,8 @@ module.exports = {
   createParquetEpkbb,
   gibGetEphpycni,
   gibUpdateEphpycni,
+  gibGetYt,
+  gibUpdateYt,
   gibGetMenu,
   gibGetError,
   gibInsertError
