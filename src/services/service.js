@@ -1,9 +1,9 @@
 const sp = require("./sp");
 
-
 class GibService {
   constructor() { }
 
+  // EK4
   async gibGetEpkbb(req, res, next) {
     try {
 
@@ -60,6 +60,7 @@ class GibService {
     }
   }
 
+  //EK5
   async gibGetEphpycni(req, res, next) {
     try {
 
@@ -116,6 +117,7 @@ class GibService {
     }
   }
 
+  //EK6
   async gibGetYt(req, res, next) {
     try {
 
@@ -148,6 +150,63 @@ class GibService {
     try {
 
       const response = await sp.gibUpdateYt(req.body);
+      if (response && response.RESPONSECODE === "000") {
+        return {
+          STATUS: "success",
+          RESPONSECODE: response.RESPONSECODE,
+          RESPONSECODEDESC: response.RESPONSECODEDESC,
+          DATA: response.DATA,
+        };
+      } else {
+        return {
+          STATUS: "error",
+          RESPONSECODE: response.RESPONSECODE,
+          RESPONSECODEDESC: response.RESPONSECODEDESC,
+        };
+      }
+    } catch (error) {
+      return {
+        STATUS: "error",
+        RESPONSECODE: "999",
+        RESPONSECODEDESC: "Beklenmeyen bir hata oluştu.",
+        RESPONSECODEDESC: error.message + error.stack,
+      };
+    }
+  }
+
+  //EK7
+  async gibGetOkkib(req, res, next) {
+    try {
+
+      const response = await sp.gibGetOkkib();
+      if (response && response.RESPONSECODE === "000") {
+        return {
+          STATUS: "success",
+          RESPONSECODE: response.RESPONSECODE,
+          RESPONSECODEDESC: response.RESPONSECODEDESC,
+          DATA: response.DATA,
+        };
+      } else {
+        return {
+          STATUS: "error",
+          RESPONSECODE: response.RESPONSECODE,
+          RESPONSECODEDESC: response.RESPONSECODEDESC,
+        };
+      }
+    } catch (error) {
+      return {
+        STATUS: "error",
+        RESPONSECODE: "999",
+        RESPONSECODEDESC: "Beklenmeyen bir hata oluştu.",
+        RESPONSECODEDESC: error.message + error.stack,
+      };
+    }
+  }
+
+  async gibUpdateOkkib(req, res, next) {
+    try {
+
+      const response = await sp.gibUpdateOkkib(req.body);
       if (response && response.RESPONSECODE === "000") {
         return {
           STATUS: "success",

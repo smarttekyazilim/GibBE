@@ -4,12 +4,17 @@ const cors = require("cors");
 const bodyParser = require("body-parser");
 const helmet = require("helmet");
 const rateLimit = require("express-rate-limit");
+const cron = require('node-cron')
 const limiter = rateLimit({
   windowMs: 1000, // 1 saniye
   max: 500, // Maksimum 500 istek
   message:
     "Saniyede çok fazla istek yapıyorsunuz. Lütfen daha sonra tekrar deneyin.",
 });
+
+require('dotenv').config()
+
+const { createParquetFiles } = require('./services/sp')
 
 // const PORT = require("./config");
 const PORT = 6049;
@@ -38,3 +43,19 @@ const StartServer = async () => {
 };
 
 StartServer();
+
+const jobs = () => {
+  cron.schedule('03 15 * * *', async() => {
+    try {
+        console.log('başladı')
+        createParquetFiles()
+    } catch (err) {
+        console.log('hata ==> ', err)
+    }
+  })
+}
+
+jobs();
+
+
+

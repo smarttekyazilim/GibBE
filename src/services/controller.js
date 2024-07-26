@@ -17,6 +17,10 @@ const routes = [
   { path: "/gibGetYt", method: "get" },
   { path: "/gibUpdateYt", method: "post" },
 
+  // EK6
+  { path: "/gibGetOkkib", method: "get" },
+  { path: "/gibUpdateOkkib", method: "post" },
+
   { path: "/gibGetMenu", method: 'post'},
   { path: "/gibGetError", method: 'get'},
   { path: "/gibInsertError", method: 'post'},
