@@ -316,6 +316,116 @@ class GibService {
       };
     }
   }
+
+  async gibInsertFileLog(req, res, next) {
+    try {
+      const response = await sp.gibInsertFileLog(req.body);
+      if (response && response.RESPONSECODE === "000") {
+        return {
+          STATUS: "success",
+          RESPONSECODE: response.RESPONSECODE,
+          RESPONSECODEDESC: response.RESPONSECODEDESC,
+          DATA: response.DATA,
+        };
+      } else {
+        return {
+          STATUS: "error",
+          RESPONSECODE: response.RESPONSECODE,
+          RESPONSECODEDESC: response.RESPONSECODEDESC,
+        };
+      }
+    } catch (error) {
+      return {
+        STATUS: "error",
+        RESPONSECODE: "999",
+        RESPONSECODEDESC: "Beklenmeyen bir hata oluştu.",
+        RESPONSECODEDESC: error.message + error.stack,
+      };
+    }
+  }
+
+  async gibGetFileLog(req, res, next) {
+    try {
+
+      const response = await sp.gibGetFileLog();
+      if (response && response.RESPONSECODE === "000") {
+        return {
+          STATUS: "success",
+          RESPONSECODE: response.RESPONSECODE,
+          RESPONSECODEDESC: response.RESPONSECODEDESC,
+          DATA: response.DATA,
+        };
+      } else {
+        return {
+          STATUS: "error",
+          RESPONSECODE: response.RESPONSECODE,
+          RESPONSECODEDESC: response.RESPONSECODEDESC,
+        };
+      }
+    } catch (error) {
+      return {
+        STATUS: "error",
+        RESPONSECODE: "999",
+        RESPONSECODEDESC: "Beklenmeyen bir hata oluştu.",
+        RESPONSECODEDESC: error.message + error.stack,
+      };
+    }
+  }
+
+  async gibUpdateFileLog(req, res, next) {
+    try {
+
+      const response = await sp.gibUpdateFileLog(req.body);
+      if (response && response.RESPONSECODE === "000") {
+        return {
+          STATUS: "success",
+          RESPONSECODE: response.RESPONSECODE,
+          RESPONSECODEDESC: response.RESPONSECODEDESC,
+          DATA: response.DATA,
+        };
+      } else {
+        return {
+          STATUS: "error",
+          RESPONSECODE: response.RESPONSECODE,
+          RESPONSECODEDESC: response.RESPONSECODEDESC,
+        };
+      }
+    } catch (error) {
+      return {
+        STATUS: "error",
+        RESPONSECODE: "999",
+        RESPONSECODEDESC: "Beklenmeyen bir hata oluştu.",
+        RESPONSECODEDESC: error.message + error.stack,
+      };
+    }
+  }
+
+  async gibSendFiles(req, res, next) {
+    try {
+
+      const response = await sp.createParquetAndUpload(req.body);
+      if (response && response.RESPONSECODE === "000") {
+        return {
+          STATUS: "success",
+          RESPONSECODE: response.RESPONSECODE,
+          RESPONSECODEDESC: response.RESPONSECODEDESC,
+          DATA: response,
+        };
+      } else {
+        return {
+          STATUS: "error"
+        };
+      }
+    } catch (error) {
+      return {
+        STATUS: "error",
+        RESPONSECODE: "999",
+        RESPONSECODEDESC: "Beklenmeyen bir hata oluştu.",
+        RESPONSECODEDESC: error.message + error.stack,
+      };
+    }
+  }
+  
 }
 
 module.exports = GibService;

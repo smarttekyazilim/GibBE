@@ -21,9 +21,11 @@ const routes = [
   { path: "/gibGetOkkib", method: "get" },
   { path: "/gibUpdateOkkib", method: "post" },
 
-  { path: "/gibGetMenu", method: 'post'},
-  { path: "/gibGetError", method: 'get'},
-  { path: "/gibInsertError", method: 'post'},
+  { path: "/gibGetMenu", method: "post"},
+  { path: "/gibGetError", method: "get"},
+  { path: "/gibInsertError", method: "post"},
+
+  { path: "/gibSendFiles", method: "post" }
 ];
 
 const service = new services();
