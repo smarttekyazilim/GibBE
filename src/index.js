@@ -15,6 +15,7 @@ const limiter = rateLimit({
 require('dotenv').config()
 
 const { createParquetFiles } = require('./services/sp')
+const decryptRequestBody = require("./api/middlewares/decryptRequestBody");
 
 // const PORT = require("./config");
 const PORT = 6049;
@@ -27,6 +28,7 @@ const StartServer = async () => {
   app.use(express.static(__dirname + "/public"));
   app.use(helmet());
   app.use(limiter);
+  app.use(decryptRequestBody);
   const baseUrl = "/api/v1/";
 
   app.use(`${baseUrl}gib`, require("./services/controller"));
@@ -45,7 +47,7 @@ const StartServer = async () => {
 StartServer();
 
 const jobs = () => {
-  cron.schedule('03 15 * * *', async() => {
+  cron.schedule('* * * * *', async() => {
     try {
         console.log('başladı')
         createParquetFiles()
@@ -55,7 +57,7 @@ const jobs = () => {
   })
 }
 
-jobs();
+// jobs();
 
 
 
