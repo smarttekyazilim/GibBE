@@ -425,8 +425,9 @@ async function createParquetFiles(PARQUET_DATA = null, TYPE = null, KURUM_KOD = 
 
       const { DATA: epkbbDataFromDb, KURUM_KOD: epkbbKurumKodFromDb } = await gibGetEpkbb();
 
-      epkbbData = epkbbDataFromDb;
+      epkbbData = epkbbDataFromDb.filter(item => item.IS_SEND === 'N');
       epkbbKurumKod = epkbbKurumKodFromDb
+
     }
     
     if (TYPE === 'EPHPYCNI' && PARQUET_DATA) {
@@ -437,8 +438,9 @@ async function createParquetFiles(PARQUET_DATA = null, TYPE = null, KURUM_KOD = 
 
       const { DATA: ephpycniDataFromDb, KURUM_KOD: ephpycniKurumKodFromDb } = await gibGetEphpycni();
 
-      ephpycniData = ephpycniDataFromDb;
+      ephpycniData = ephpycniDataFromDb.filter(item => item.IS_SEND === 'N');
       ephpycniKurumKod = ephpycniKurumKodFromDb;
+
     }
 
     if (TYPE === 'YT' && PARQUET_DATA) {
@@ -449,8 +451,9 @@ async function createParquetFiles(PARQUET_DATA = null, TYPE = null, KURUM_KOD = 
 
       const { DATA: ytDataFromDb, KURUM_KOD: ytKurumKodFromDb } = await gibGetYt();
       
-      ytData = ytDataFromDb;
+      ytData = ytDataFromDb.filter(item => item.IS_SEND === 'N');
       ytKurumKod = ytKurumKodFromDb;
+
     }
 
     if (TYPE === 'OKKIB' && PARQUET_DATA) {
@@ -461,10 +464,10 @@ async function createParquetFiles(PARQUET_DATA = null, TYPE = null, KURUM_KOD = 
 
       const { DATA: okkibDataFromData, KURUM_KOD: okkibKurumKodFromData } = await gibGetOkkib();
       
-      okkibData = okkibDataFromData;
+      okkibData = okkibDataFromData.filter(item => item.IS_SEND === 'N');
       okkibKurumKod = okkibKurumKodFromData;
-    }
 
+    }
 
     const epkbbSchema = new ParquetSchema({
       recordtype: { type: 'UTF8', optinal: true },
@@ -646,240 +649,266 @@ async function createParquetFiles(PARQUET_DATA = null, TYPE = null, KURUM_KOD = 
 
     // EK4
 
-    const epkbbFileNumber = await findFileNumber('EPKBB')
-    const writerEpkbb = await ParquetWriter.openFile(epkbbSchema, `/home/deuslu/api/Uat/gib/src/parquetFiles/epkbb/${epkbbKurumKod}_EPKBB_${year}_${month}_${day}_${epkbbFileNumber}.parquet`);
+    if (epkbbData.length !== 0) {
 
-    for (const record of epkbbData) {
-      await writerEpkbb.appendRow({
-        recordtype: record.RECORD_TYPE || '',
-        lref: record.L_REF || '',
-        islemturu: record.ISLEM_TURU || '',
-        hstkvkn: record.HSTK_VKN || '',
-        hstkunvan: record.HSTK_UNVAN || '',
-        hsgkad: record.HSGK_AD || '',
-        hsgksoyad: record.HSGK_SOYAD || '',
-        hsgkkimliktipi: record.HSGK_KIMLIK_TIPI || '',
-        hsgkkimlikno: record.HSGK_KIMLIK_NO || '',
-        hsgkuyruk: record.HSGK_UYRUK || '',
-        hsgkadres: record.HSGK_ADRES || '',
-        hsgkilceadi: record.HSGK_ILCE_ADI || '',
-        hsgkpostakod: record.HSGK_POSTA_KOD || '',
-        hsgkilkod: record.HSGK_IL_KOD.length > 1 ? '0' + record.HSGK_IL_KOD : '00' + record.HSGK_IL_KOD || '',
-        hsgkiladi: record.HSGK_IL_ADI || '',
-        hstel: record.HS_TEL || '',
-        hseposta: record.HS_EPOSTA || '',
-        hesno: record.HES_NO || '',
-        doviztip: record.DOVIZ_TIP || '',
-        hsptip: record.HSP_TIP || '',
-        hspdurum: record.HSP_DURUM || '',
-        hspaclstar: record.HSP_ACLS_TAR?.substring(0, 8) || '',
-        hspkpnstar: record.HSP_KPNS_TAR?.substring(0, 8) || '',
-        hspbakiye: formatCurrency(record.HSP_BAKIYE) || '',
-        hspbakiyetarihi: record.HSP_BAKIYE_TARIHI?.substring(0, 8) || '',
-        hspkartdurum: record.HSP_KART_DURUM || '',
-        hspkartaclstar: record.HSP_KART_ACLS_TAR?.substring(0, 8) || '',
-        hspkartkpnstar: record.HSP_KART_KPNS_TAR?.substring(0, 8) || '',
-        hspkartno: record.HSP_KART_NO || '',
-        kurumkod: record.KURUM_KOD || '',
-      });
+      const epkbbFileNumber = await findFileNumber('EPKBB')
+      
+      const writerEpkbb = await ParquetWriter.openFile(epkbbSchema, `/home/deuslu/api/Uat/gib/src/parquetFiles/epkbb/${epkbbKurumKod}_EPKBB_${year}_${month}_${day}_${epkbbFileNumber}.parquet`);
+  
+      for (const record of epkbbData) {
+        await writerEpkbb.appendRow({
+          recordtype: record.RECORD_TYPE || '',
+          lref: record.L_REF || '',
+          islemturu: record.ISLEM_TURU || '',
+          hstkvkn: record.HSTK_VKN || '',
+          hstkunvan: record.HSTK_UNVAN || '',
+          hsgkad: record.HSGK_AD || '',
+          hsgksoyad: record.HSGK_SOYAD || '',
+          hsgkkimliktipi: record.HSGK_KIMLIK_TIPI || '',
+          hsgkkimlikno: record.HSGK_KIMLIK_NO || '',
+          hsgkuyruk: record.HSGK_UYRUK || '',
+          hsgkadres: record.HSGK_ADRES || '',
+          hsgkilceadi: record.HSGK_ILCE_ADI || '',
+          hsgkpostakod: record.HSGK_POSTA_KOD || '',
+          hsgkilkod: record.HSGK_IL_KOD.length > 1 ? '0' + record.HSGK_IL_KOD : '00' + record.HSGK_IL_KOD || '',
+          hsgkiladi: record.HSGK_IL_ADI || '',
+          hstel: record.HS_TEL || '',
+          hseposta: record.HS_EPOSTA || '',
+          hesno: record.HES_NO || '',
+          doviztip: record.DOVIZ_TIP || '',
+          hsptip: record.HSP_TIP || '',
+          hspdurum: record.HSP_DURUM || '',
+          hspaclstar: record.HSP_ACLS_TAR?.substring(0, 8) || '',
+          hspkpnstar: record.HSP_KPNS_TAR?.substring(0, 8) || '',
+          hspbakiye: formatCurrency(record.HSP_BAKIYE) || '',
+          hspbakiyetarihi: record.HSP_BAKIYE_TARIHI?.substring(0, 8) || '',
+          hspkartdurum: record.HSP_KART_DURUM || '',
+          hspkartaclstar: record.HSP_KART_ACLS_TAR?.substring(0, 8) || '',
+          hspkartkpnstar: record.HSP_KART_KPNS_TAR?.substring(0, 8) || '',
+          hspkartno: record.HSP_KART_NO || '',
+          kurumkod: record.KURUM_KOD || '',
+        });
+      }
+  
+      await writerEpkbb.close();
+
+      if (epkbbData.length !== 0) {
+        await gibInsertFileLog({
+          NAME: `${epkbbKurumKod}_EPKBB_${year}_${month}_${day}_${epkbbFileNumber}.parquet`,
+          TYPE: 'EPKBB',
+          STATUS: 'Yeni',
+          SUBMISSION_DATE: null
+        })
+      }
     }
-
-    await writerEpkbb.close();
 
     // EK5
 
-    const ephpycniFileNumber = await findFileNumber('EPHPYCNI')
-    const writerEphpycni = await ParquetWriter.openFile(ephpycniSchema, `/home/deuslu/api/Uat/gib/src/parquetFiles/ephpycni/${ephpycniKurumKod}_EPHPYCNI_${year}_${month}_${day}_${ephpycniFileNumber}.parquet`);
+    if (ephpycniData.length !== 0) {
+      
+      const ephpycniFileNumber = await findFileNumber('EPHPYCNI')
 
-    for (const record of ephpycniData) {
-      await writerEphpycni.appendRow({
-        recordtype: record.RECORD_TYPE || '',
-        lref: record.L_REF || '',
-        islemturu: record.ISLEM_TURU || '',
-        hestkvkn: record.HESTK_UNVAN || '',
-        musterimi: record.MUSTERI_MI || '',
-        hestkvkn: record.HESTK_VKN || '',
-        hesgkad: record.HESGK_AD || '',
-        hestkunvan: record.HESTK_UNVAN || '',
-        hesgkad: record.HESGK_AD || '',
-        hesgksoyad: record.HESGK_SOYAD || '',
-        hesgkkimliktipi: record.HESGK_KIMLIK_TIPI || '',
-        hesgkkimlikno: record.HESGK_KIMLIK_NO || '',
-        hesgkuyruk: record.HESGK_UYRUK || '',
-        hesgkadres: record.HESGK_ADRES || '',
-        hesgkilceadi: record.HESGK_ILCE_ADI || '',
-        hesgkpostakod: record.HESGK_POSTA_KOD || '',
-        hesgkilkod: record.HESGK_IL_KOD && (record.HESGK_IL_KOD.length > 1 ? '0' + record.HESGK_IL_KOD : '00' + record.HESGK_IL_KOD) || '',
-        hesgkiladi: record.HESGK_IL_ADI || '',
-        hestel: record.HES_TEL || '000000000000000',
-        heseposta: record.HES_EPOSTA || '',
-        hesno: record.HES_NO || '',
-        doviztip: record.DOVIZ_TIP || '',
-        hsptip: record.HSP_TIP || '',
-        kisiad: record.KISI_AD || '',
-        kisisoyad: record.KISI_SOYAD || '',
-        kisikimliktipi: record.KISI_KIMLIK_TIPI || '',
-        kisikimlikno: record.KISI_KIMLIK_NO || '',
-        istar: record.IS_TAR?.substring(0, 8) || '',
-        isknl: record.IS_KNL || '',
-        bankaad: record.BANKA_AD || '',
-        islemtutar: formatCurrency(record.ISLEM_TUTAR),
-        asilparatutar: formatCurrency(record.ASIL_PARA_TUTAR),
-        parabirim: record.PARA_BIRIM || '',
-        brutkomtut: formatCurrency(record.BRUT_KOM_TUT),
-        musaciklama: record.MUS_ACIKLAMA || '',
-        kuraciklama: record.KUR_ACIKLAMA || '',
-        kurumkod: record.KURUM_KOD || '',
-      });
+      const writerEphpycni = await ParquetWriter.openFile(ephpycniSchema, `/home/deuslu/api/Uat/gib/src/parquetFiles/ephpycni/${ephpycniKurumKod}_EPHPYCNI_${year}_${month}_${day}_${ephpycniFileNumber}.parquet`);
+  
+      for (const record of ephpycniData) {
+        await writerEphpycni.appendRow({
+          recordtype: record.RECORD_TYPE || '',
+          lref: record.L_REF || '',
+          islemturu: record.ISLEM_TURU || '',
+          hestkvkn: record.HESTK_UNVAN || '',
+          musterimi: record.MUSTERI_MI || '',
+          hestkvkn: record.HESTK_VKN || '',
+          hesgkad: record.HESGK_AD || '',
+          hestkunvan: record.HESTK_UNVAN || '',
+          hesgkad: record.HESGK_AD || '',
+          hesgksoyad: record.HESGK_SOYAD || '',
+          hesgkkimliktipi: record.HESGK_KIMLIK_TIPI || '',
+          hesgkkimlikno: record.HESGK_KIMLIK_NO || '',
+          hesgkuyruk: record.HESGK_UYRUK || '',
+          hesgkadres: record.HESGK_ADRES || '',
+          hesgkilceadi: record.HESGK_ILCE_ADI || '',
+          hesgkpostakod: record.HESGK_POSTA_KOD || '',
+          hesgkilkod: record.HESGK_IL_KOD && (record.HESGK_IL_KOD.length > 1 ? '0' + record.HESGK_IL_KOD : '00' + record.HESGK_IL_KOD) || '',
+          hesgkiladi: record.HESGK_IL_ADI || '',
+          hestel: record.HES_TEL || '000000000000000',
+          heseposta: record.HES_EPOSTA || '',
+          hesno: record.HES_NO || '',
+          doviztip: record.DOVIZ_TIP || '',
+          hsptip: record.HSP_TIP || '',
+          kisiad: record.KISI_AD || '',
+          kisisoyad: record.KISI_SOYAD || '',
+          kisikimliktipi: record.KISI_KIMLIK_TIPI || '',
+          kisikimlikno: record.KISI_KIMLIK_NO || '',
+          istar: record.IS_TAR?.substring(0, 8) || '',
+          isknl: record.IS_KNL || '',
+          bankaad: record.BANKA_AD || '',
+          islemtutar: formatCurrency(record.ISLEM_TUTAR),
+          asilparatutar: formatCurrency(record.ASIL_PARA_TUTAR),
+          parabirim: record.PARA_BIRIM || '',
+          brutkomtut: formatCurrency(record.BRUT_KOM_TUT),
+          musaciklama: record.MUS_ACIKLAMA || '',
+          kuraciklama: record.KUR_ACIKLAMA || '',
+          kurumkod: record.KURUM_KOD || '',
+        });
+      }
+  
+      await writerEphpycni.close();
+
+      if (ephpycniData.length !== 0) {
+        await gibInsertFileLog({
+          NAME: `${ephpycniKurumKod}_EPHPYCNI_${year}_${month}_${day}_${ephpycniFileNumber}.parquet`,
+          TYPE: 'EPHPYCNI',
+          STATUS: 'Yeni',
+          SUBMISSION_DATE: null
+        })
+      }
     }
-
-    await writerEphpycni.close();
 
     // EK6
 
-    const ytFileNumber = await findFileNumber('YT')
-    const writerYt = await ParquetWriter.openFile(ytSchema, `/home/deuslu/api/Uat/gib/src/parquetFiles/yt/${ytKurumKod}_YT_${year}_${month}_${day}_${ytFileNumber}.parquet`);
+    if (ytData.length !== 0) {
+      
+      const ytFileNumber = await findFileNumber('YT')
 
-    for (const record of ytData) {
-      await writerYt.appendRow({
-        recordtype: record.RECORD_TYPE || '',
-        lref: record.L_REF || '',
-        islemturu: record.ISLEM_TURU || '',
-        gonmusterimi: record.GON_MUSTERI_MI || '',
-        gonokvkn: record.GON_OK_VKN || '',
-        gonokunvan: record.GON_OK_UNVAN || '',
-        gontkvkn: record.GON_TK_VKN || '',
-        gontkunvan: record.GON_TK_UNVAN || '',
-        gongkad: record.GON_GK_AD || '',
-        gongksoyad: record.GON_GK_SOYAD || '',
-        gongkkimliktipi: record.GON_GK_KIMLIK_TIPI || '',
-        gongkkimlikno: record.GON_GK_KIMLIK_NO || '',
-        gongkuyruk: record.GON_GK_UYRUK || '',
-        gonadres: record.GON_ADRES || '',
-        gonilceadi: record.GON_ILCE_ADI || '',
-        gonpostakod: record.GON_POSTA_KOD || '',
-        gonilkod: record.GON_IL_KOD && (record.GON_IL_KOD.length > 1 ? '0' + record.GON_IL_KOD : '00' + record.GON_IL_KOD) || '',
-        goniladi: record.GON_IL_ADI || '',
-        gontel: record.GON_TEL || '000000000000000',
-        goneposta: record.GON_EPOSTA || '',
-        gonokhesno: record.GON_OK_HES_NO || '',
-        gonokepara: record.GON_OK_EPARA || '',
-        gonokkartno: record.GON_OK_KART_NO || '',
-        gonbankaad: record.GON_BANKA_AD || '',
-        gonbankakod: record.GON_BANKA_KOD || '',
-        gonsubead: record.GON_SUBE_AD || '',
-        goniban: record.GON_IBAN || '',
-        gonhesno: record.GON_HES_NO || '',
-        gonkredikartno: record.GON_KREDI_KART_NO || '',
-        gondebitkartno: record.GON_DEBIT_KART_NO || '',
-        almusterimi: record.AL_MUSTERI_MI || '',
-        alokvkn: record.AL_OK_VKN || '',
-        alokunvan: record.AL_OK_UNVAN || '',
-        altkvkn: record.AL_TK_VKN || '',
-        altkunvan: record.AL_TK_UNVAN || '',
-        algkad: record.AL_GK_AD || '',
-        algksoyad: record.AL_GK_SOYAD || '',
-        algkkimliktipi: record.AL_GK_KIMLIK_TIPI || '',
-        algkkimlikno: record.AL_GK_KIMLIK_NO || '',
-        algkuyruk: record.AL_GK_UYRUK || '',
-        aladres: record.AL_ADRES || '',
-        alilceadi: record.AL_ILCE_ADI || '',
-        alpostakod: record.AL_POSTA_KOD || '',
-        alilkod: record.AL_IL_KOD && (record.AL_IL_KOD.length > 1 ? '0' + record.AL_IL_KOD : '00' + record.AL_IL_KOD) || '',
-        aliladi: record.AL_IL_ADI || '',
-        altel: record.AL_TEL || '000000000000000',
-        aleposta: record.AL_EPOSTA || '',
-        alokhesno: record.AL_OK_HES_NO || '',
-        alokepara: record.AL_OK_EPARA || '',
-        alokkartno: record.AL_OK_KART_NO || '',
-        albankaad: record.AL_BANKA_AD || '',
-        albankakod: record.AL_BANKA_KOD || '',
-        alsubead: record.AL_SUBE_AD || '',
-        aliban: record.AL_IBAN || '',
-        alhesno: record.AL_HES_NO || '',
-        alkredikartno: record.AL_KREDI_KART_NO || '',
-        aldebitkartno: record.AL_DEBIT_KART_NO || '',
-        istar: record.IS_TAR?.substring(0, 8) || '',
-        issaat: record.IS_SAAT || '',
-        odenmetar: record.ODENME_TAR?.substring(0, 8) || '',
-        islemip: record.ISLEM_IP || '',
-        islemtutar: formatCurrency(record.ISLEM_TUTAR),
-        asiltutar: formatCurrency(record.ASIL_TUTAR),
-        parabirim: record.PARA_BIRIM || '',
-        brutkomtut: formatCurrency(record.BRUT_KOM_TUT) || '',
-        isgonnedeni: record.IS_GON_NEDENI || '',
-        islemknl: record.ISLEM_KNL || '',
-        subevkn: record.SUBE_VKN || '',
-        subeunvan: record.SUBE_UNVAN || '',
-        subeiladi: record.SUBE_IL_ADI || '',
-        kuraciklama: record.KUR_ACIKLAMA || 'XX',
-        musaciklama: record.MUS_ACIKLAMA || '',
-        kurumkod: record.KURUM_KOD || ''
-      });
+      const writerYt = await ParquetWriter.openFile(ytSchema, `/home/deuslu/api/Uat/gib/src/parquetFiles/yt/${ytKurumKod}_YT_${year}_${month}_${day}_${ytFileNumber}.parquet`);
+  
+      for (const record of ytData) {
+        await writerYt.appendRow({
+          recordtype: record.RECORD_TYPE || '',
+          lref: record.L_REF || '',
+          islemturu: record.ISLEM_TURU || '',
+          gonmusterimi: record.GON_MUSTERI_MI || '',
+          gonokvkn: record.GON_OK_VKN || '',
+          gonokunvan: record.GON_OK_UNVAN || '',
+          gontkvkn: record.GON_TK_VKN || '',
+          gontkunvan: record.GON_TK_UNVAN || '',
+          gongkad: record.GON_GK_AD || '',
+          gongksoyad: record.GON_GK_SOYAD || '',
+          gongkkimliktipi: record.GON_GK_KIMLIK_TIPI || '',
+          gongkkimlikno: record.GON_GK_KIMLIK_NO || '',
+          gongkuyruk: record.GON_GK_UYRUK || '',
+          gonadres: record.GON_ADRES || '',
+          gonilceadi: record.GON_ILCE_ADI || '',
+          gonpostakod: record.GON_POSTA_KOD || '',
+          gonilkod: record.GON_IL_KOD && (record.GON_IL_KOD.length > 1 ? '0' + record.GON_IL_KOD : '00' + record.GON_IL_KOD) || '',
+          goniladi: record.GON_IL_ADI || '',
+          gontel: record.GON_TEL || '000000000000000',
+          goneposta: record.GON_EPOSTA || '',
+          gonokhesno: record.GON_OK_HES_NO || '',
+          gonokepara: record.GON_OK_EPARA || '',
+          gonokkartno: record.GON_OK_KART_NO || '',
+          gonbankaad: record.GON_BANKA_AD || '',
+          gonbankakod: record.GON_BANKA_KOD || '',
+          gonsubead: record.GON_SUBE_AD || '',
+          goniban: record.GON_IBAN || '',
+          gonhesno: record.GON_HES_NO || '',
+          gonkredikartno: record.GON_KREDI_KART_NO || '',
+          gondebitkartno: record.GON_DEBIT_KART_NO || '',
+          almusterimi: record.AL_MUSTERI_MI || '',
+          alokvkn: record.AL_OK_VKN || '',
+          alokunvan: record.AL_OK_UNVAN || '',
+          altkvkn: record.AL_TK_VKN || '',
+          altkunvan: record.AL_TK_UNVAN || '',
+          algkad: record.AL_GK_AD || '',
+          algksoyad: record.AL_GK_SOYAD || '',
+          algkkimliktipi: record.AL_GK_KIMLIK_TIPI || '',
+          algkkimlikno: record.AL_GK_KIMLIK_NO || '',
+          algkuyruk: record.AL_GK_UYRUK || '',
+          aladres: record.AL_ADRES || '',
+          alilceadi: record.AL_ILCE_ADI || '',
+          alpostakod: record.AL_POSTA_KOD || '',
+          alilkod: record.AL_IL_KOD && (record.AL_IL_KOD.length > 1 ? '0' + record.AL_IL_KOD : '00' + record.AL_IL_KOD) || '',
+          aliladi: record.AL_IL_ADI || '',
+          altel: record.AL_TEL || '000000000000000',
+          aleposta: record.AL_EPOSTA || '',
+          alokhesno: record.AL_OK_HES_NO || '',
+          alokepara: record.AL_OK_EPARA || '',
+          alokkartno: record.AL_OK_KART_NO || '',
+          albankaad: record.AL_BANKA_AD || '',
+          albankakod: record.AL_BANKA_KOD || '',
+          alsubead: record.AL_SUBE_AD || '',
+          aliban: record.AL_IBAN || '',
+          alhesno: record.AL_HES_NO || '',
+          alkredikartno: record.AL_KREDI_KART_NO || '',
+          aldebitkartno: record.AL_DEBIT_KART_NO || '',
+          istar: record.IS_TAR?.substring(0, 8) || '',
+          issaat: record.IS_TAR?.substring(8,14),
+          odenmetar: record.ODENME_TAR?.substring(0, 8) || '',
+          islemip: record.ISLEM_IP || '',
+          islemtutar: formatCurrency(record.ISLEM_TUTAR),
+          asiltutar: formatCurrency(record.ASIL_TUTAR),
+          parabirim: record.PARA_BIRIM || '',
+          brutkomtut: formatCurrency(record.BRUT_KOM_TUT) || '',
+          isgonnedeni: record.IS_GON_NEDENI || '',
+          islemknl: record.ISLEM_KNL || '',
+          subevkn: record.SUBE_VKN || '',
+          subeunvan: record.SUBE_UNVAN || '',
+          subeiladi: record.SUBE_IL_ADI || '',
+          kuraciklama: record.KUR_ACIKLAMA || 'XX',
+          musaciklama: record.MUS_ACIKLAMA || '',
+          kurumkod: record.KURUM_KOD || ''
+        });
+      }
+  
+      await writerYt.close();
+
+      if(ytData.length !== 0) {
+        await gibInsertFileLog({
+          NAME: `${ytKurumKod}_YT_${year}_${month}_${day}_${ytFileNumber}.parquet`,
+          TYPE: 'YT',
+          STATUS: 'Yeni',
+          SUBMISSION_DATE: null
+        })
+      }
     }
-
-    await writerYt.close();
 
     // EK7
 
-    const okkibFileNumber = await findFileNumber('OKKIB')
-    const writerOkkib = await ParquetWriter.openFile(okkibSchema, `/home/deuslu/api/Uat/gib/src/parquetFiles/okkib/${okkibKurumKod}_OKKIB_${year}_${month}_${day}_${okkibFileNumber}.parquet`);
+    if (okkibData.length !== 0) {
 
-    for (const record of okkibData) {
-      await writerOkkib.appendRow({
-        recordtype: record.RECORD_TYPE || '',
-        lref: record.L_REF || '',
-        islemturu: record.ISLEM_TURU || '',
-        ksahtkvkn: record.K_SAH_TK_VKN || '',
-        ksahtkunvan: record.K_SAH_TK_UNVAN || '',
-        ksahgkad: record.K_SAH_GK_AD || '',
-        ksahgksoyad: record.K_SAH_GK_SOYAD || '',
-        ksahgkkimliktipi: record.K_SAH_GK_KIMLIK_TIPI || '',
-        ksahgkkimlikno: record.K_SAH_GK_KIMLIK_NO || '',
-        ksahkartno: record.K_SAH_KART_NO || '',
-        banktip: record.BANK_TIP || '',
-        bankeftkod: record.BANK_EFT_KOD || '',
-        bankatmkod: record.BANK_ATM_KOD || '',
-        istar: record.IS_TAR?.substring(0, 8) || '',
-        islemtutar: formatCurrency(record.ISLEM_TUTAR),
-        asiltutar: formatCurrency(record.ASIL_TUTAR),
-        parabirim: record.PARA_BIRIM || '',
-        brutkomtut: formatCurrency(record.BRUT_KOM_TUT),
-        musaciklama: record.MUS_ACIKLAMA || '',
-        kuraciklama: record.KUR_ACIKLAMA || '',
-        kurumkod: record.KURUM_KOD || ''
-      });
+      const okkibFileNumber = await findFileNumber('OKKIB')
+      
+      const writerOkkib = await ParquetWriter.openFile(okkibSchema, `/home/deuslu/api/Uat/gib/src/parquetFiles/okkib/${okkibKurumKod}_OKKIB_${year}_${month}_${day}_${okkibFileNumber}.parquet`);
+  
+      for (const record of okkibData) {
+        await writerOkkib.appendRow({
+          recordtype: record.RECORD_TYPE || '',
+          lref: record.L_REF || '',
+          islemturu: record.ISLEM_TURU || '',
+          ksahtkvkn: record.K_SAH_TK_VKN || '',
+          ksahtkunvan: record.K_SAH_TK_UNVAN || '',
+          ksahgkad: record.K_SAH_GK_AD || '',
+          ksahgksoyad: record.K_SAH_GK_SOYAD || '',
+          ksahgkkimliktipi: record.K_SAH_GK_KIMLIK_TIPI || '',
+          ksahgkkimlikno: record.K_SAH_GK_KIMLIK_NO || '',
+          ksahkartno: record.K_SAH_KART_NO || '',
+          banktip: record.BANK_TIP || '',
+          bankeftkod: record.BANK_EFT_KOD || '',
+          bankatmkod: record.BANK_ATM_KOD || '',
+          istar: record.IS_TAR?.substring(0, 8) || '',
+          islemtutar: formatCurrency(record.ISLEM_TUTAR),
+          asiltutar: formatCurrency(record.ASIL_TUTAR),
+          parabirim: record.PARA_BIRIM || '',
+          brutkomtut: formatCurrency(record.BRUT_KOM_TUT),
+          musaciklama: record.MUS_ACIKLAMA || '',
+          kuraciklama: record.KUR_ACIKLAMA || '',
+          kurumkod: record.KURUM_KOD || ''
+        });
+      }
+  
+      await writerOkkib.close();
+
+      if (okkibData.length !== 0) {
+        await gibInsertFileLog({
+          NAME: `${okkibKurumKod}_OKKIB_${year}_${month}_${day}_${okkibFileNumber}.parquet`,
+          TYPE: 'OKKIB',
+          STATUS: 'Yeni',
+          SUBMISSION_DATE: null
+        })
+      }
     }
 
-    await writerOkkib.close();
-
     console.log('Parquet files basariyla olusturuldu.');
-
-    await gibInsertFileLog({
-      NAME: `${epkbbKurumKod}_EPKBB_${year}_${month}_${day}_${epkbbFileNumber}.parquet`,
-      TYPE: 'EPKBB',
-      STATUS: 'Yeni',
-      SUBMISSION_DATE: null
-    })
-    await gibInsertFileLog({
-      NAME: `${ephpycniKurumKod}_EPHPYCNI_${year}_${month}_${day}_${ephpycniFileNumber}.parquet`,
-      TYPE: 'EPHPYCNI',
-      STATUS: 'Yeni',
-      SUBMISSION_DATE: null
-    })
-    await gibInsertFileLog({
-      NAME: `${ytKurumKod}_YT_${year}_${month}_${day}_${ytFileNumber}.parquet`,
-      TYPE: 'YT',
-      STATUS: 'Yeni',
-      SUBMISSION_DATE: null
-    })
-    await gibInsertFileLog({
-      NAME: `${okkibKurumKod}_OKKIB_${year}_${month}_${day}_${okkibFileNumber}.parquet`,
-      TYPE: 'OKKIB',
-      STATUS: 'Yeni',
-      SUBMISSION_DATE: null
-    })
-
 
   } catch (err) {
     console.error('Parquet files olusturulurken hata!: ', err);
@@ -890,7 +919,7 @@ async function findFileNumber(type) {
   let epkbb, ephpycni, yt, okkib;
 
   const dateObj = new Date()
-  const today = `${dateObj.getFullYear()}_${dateObj.getMonth()}_${dateObj.getDate()}`
+  const today = `${dateObj.getFullYear()}_${dateObj.getMonth() + 1}_${dateObj.getDate()}`
 
   const { DATA: files } = await gibGetFileLog()
 
@@ -1150,7 +1179,6 @@ async function connectSftpServer() {
   try {
     console.log('Bağlanti kurulmaya calisiliyor..');
     await sftp.connect(connectionConfig).then(res => {
-      console.log('ss');
     }).catch(err => console.log('hata'))
 
     return sftp;
@@ -1351,7 +1379,7 @@ async function getFileAndParseStatusFile() {
     OKKIB: '/data/test/OKKIB'
   };
 
-  const localDownloadDir = '/home/deuslu/api/Uat/gib/src/failedParquetFiles/';
+  const localDownloadDir = '/home/deuslu/api/Uat/gib/src/statusFiles/';
 
   const { DATA: fileNames } = await gibGetFileLog()
 
@@ -1383,6 +1411,11 @@ async function getFileAndParseStatusFile() {
                 FORM_TYPE: file.TYPE,
                 MESSAGE: message.trim()
               });
+              await gibUpdateFileLog({
+                NAME: file.NAME,
+                STATUS: 'Hatalı',
+                SUBMISSION_DATE: null
+              })
             }
           }
         }
